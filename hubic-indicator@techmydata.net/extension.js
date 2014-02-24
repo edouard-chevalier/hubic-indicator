@@ -372,11 +372,7 @@ function init() {
 
 function enable() {
     log("Enabling hubic board...");
-    
-    //clean if needed.
-    if (hubicindicator !== null){
-        disable();
-    }
+
     hubicindicator = new HubicBoard();
     Main.panel.addToStatusArea('hubicboard', hubicindicator);
 };
