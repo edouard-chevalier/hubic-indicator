@@ -23,10 +23,17 @@ const Mainloop = imports.mainloop;
 const Me = imports.misc.extensionUtils.getCurrentExtension();
 
 const Gio = imports.gi.Gio;
+
+//util
+function _log(message){
+    //TODO: activate log with a debug flag.
+    log(message);
+}
 /**
- * Comment obtenir les interfaces ? facile: dbus-send --session --print-reply
- * --dest=com.hubiC /com/hubic/General
- * org.freedesktop.DBus.Introspectable.Introspect
+ * Hubic uses DBus for communication.
+ * Dbus publishes its interface. How to describe it ? with XML.
+ * And one can have it with a dbus command:
+ * dbus-send --session --print-reply --dest=com.hubiC /com/hubic/General org.freedesktop.DBus.Introspectable.Introspect
  * 
  * and some more info on how to use gjs DBus bindings :
  * https://mail.gnome.org/archives/gnome-shell-list/2013-February/msg00059.html
@@ -108,8 +115,7 @@ const HubicBoard = new Lang.Class({
 
         // register timer that refresh properties of general and account
         // properties.
-        // once problems with refresh of these properties are solved, can be
-        // removed.
+        // once problems with refresh of these properties are solved, can be removed.
         this.timer = Mainloop.timeout_add_seconds(60, Lang.bind(this, function() {
             this.refresh();
             return true;
@@ -118,7 +124,7 @@ const HubicBoard = new Lang.Class({
     
     _initUI: function(){
         this.UI ={};
-        log("initialiazing UI hubic board...");
+        _log("initialiazing UI hubic board...");
 
         // we init & load the different status icons.
         this.UI.statusicons= {};
@@ -167,7 +173,7 @@ const HubicBoard = new Lang.Class({
         
         // case not connected, nothing to display but propose to reconnect.
         if((state == 'NotConnected') || (state == 'Connecting') || (state == 'Unknown')){
-            log("Not showing account stuffs");
+            _log("Not showing account stuffs");
             let menuItem = new PopupMenu.PopupMenuItem("No account info available.");
             menuItem.setSensitive(false);
             this.UI.account.menu.addMenuItem(menuItem);
@@ -194,13 +200,13 @@ const HubicBoard = new Lang.Class({
         }
     },
     refresh: function(){
-        log("Refreshing hubic board data ...");
-        log("Refreshing general");
+        _log("Refreshing hubic board data ...");
+        _log("Refreshing general");
 // this.refreshGeneral(false);
         this.UI.general.state.text = this.currentState;
-        log("Refreshing account");
+        _log("Refreshing account");
         this.refreshAccountUI();
-        log("Refreshing last Messages ...");
+        _log("Refreshing last Messages ...");
         this.rebuildLastMessages();
     },
     rebuildLastMessages: function(){
@@ -238,7 +244,7 @@ const HubicBoard = new Lang.Class({
             // log("Refreshing general data is useless.");
 		return;
         }
-        log("Refreshing general data...");
+        _log("Refreshing general data...");
         this._destroyGeneral();
         this._general = new GeneralProxy(Gio.DBus.session, 'com.hubiC','/com/hubic/General');
         this.stateChangedSignalId = this._general.connectSignal('StateChanged',Lang.bind(this,function(proxy,sender,res){
@@ -273,17 +279,17 @@ const HubicBoard = new Lang.Class({
             // log("Refreshing general data is useless.");
             return;
         } 
-        log("Refreshing account data...");
+        _log("Refreshing account data...");
         this._destroyAccount();
         this._account = new AccountProxy(Gio.DBus.session, 'com.hubiC','/com/hubic/Account');
         this.itemChangedSignalId = this._account.connectSignal('ItemChanged',Lang.bind(this,function(proxy,sender,res){
-            log("Item state changed by " + sender + " with path "+ res[0] );
-            log("original connection :" + this.itemChangedSignalId);
+            _log("Item state changed by " + sender + " with path "+ res[0] );
+            _log("original connection :" + this.itemChangedSignalId);
             // this.currentState = res[1];
             // this.refreshGeneral(true);
             let status = this._account.GetItemStatusSync(res[0]);
             if(status){
-                log("status" + status);
+                _log("status" + status);
             }
             this.refresh();
         }));
@@ -314,7 +320,7 @@ const HubicBoard = new Lang.Class({
         if(gen){
             gen.ReconnectRemote(Lang.bind(this,function (result, error) {
                 if (error) {
-                    log("Error reconnecting : " + error.toString());
+                    _log("Error reconnecting : " + error.toString());
                 }
             }));
         }
@@ -371,7 +377,7 @@ function init() {
 };
 
 function enable() {
-    log("Enabling hubic board...");
+    _log("Enabling hubic board...");
 
     hubicindicator = new HubicBoard();
     Main.panel.addToStatusArea('hubicboard', hubicindicator);
