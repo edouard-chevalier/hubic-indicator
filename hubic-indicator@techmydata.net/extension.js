@@ -27,7 +27,7 @@ const Gio = imports.gi.Gio;
 //util
 function _log(message){
     //TODO: activate log with a debug flag.
-    //log(message);
+    log(message);
 }
 /**
  * Hubic uses DBus for communication.
@@ -248,14 +248,14 @@ const HubicBoard = new Lang.Class({
         this._destroyGeneral();
         this._general = new GeneralProxy(Gio.DBus.session, 'com.hubiC','/com/hubic/General');
         this.stateChangedSignalId = this._general.connectSignal('StateChanged',Lang.bind(this,function(proxy,sender,res){
-            log("Signal state changed by " + sender + " with state old "+ res[0] + " new state " + res[1]);
-            log("original connection :" + this.stateChangedSignalId);
+            _log("Signal state changed by " + sender + " with state old "+ res[0] + " new state " + res[1]);
+            _log("original connection :" + this.stateChangedSignalId);
             // disconnect from signal 'StateChanged' no, but should
             // be in _destroyGeneral().
             // this.sender = sender;
             // this._general.disconnectSignal(this.stateChangedSignalId);
             if(this.currentState !== res[0]){
-                log("Warning : expected previous state was " + this.currentState);
+                _log("Warning : expected previous state was " + this.currentState);
             }
             this.currentState = res[1];
             //this.refreshGeneral(true);
@@ -291,7 +291,7 @@ const HubicBoard = new Lang.Class({
             if(status){
                 _log("status" + status);
             }
-            this.refresh();
+            //this.refresh();
         }));
     },
     _destroyAccount: function(){
