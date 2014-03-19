@@ -27,7 +27,7 @@ const Gio = imports.gi.Gio;
 //util
 function _log(message){
     //TODO: activate log with a debug flag.
-    log(message);
+    //log(message);
 }
 /**
  * Hubic uses DBus for communication.
