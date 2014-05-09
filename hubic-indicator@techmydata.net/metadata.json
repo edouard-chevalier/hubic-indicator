@@ -1,1 +1,12 @@
-{"shell-version": ["3.8.4"], "uuid": "hubic-indicator@techmydata.net", "name": "Hubic Indicator", "description": "Main informations and controls on your hubic synchronization daemon"}
+{
+	"shell-version": 
+	[
+		"3.8"
+	],
+
+	"uuid": "hubic-indicator@techmydata.net",
+	"name": "Hubic Indicator",
+	"url": "https://github.com/DoudTechData/hubic-indicator",
+	"description": "Main informations and controls on your hubic synchronization daemon. Hubic (http://hubic.com) is a personal storage platform online (like dropbox, Box, Google Drive).",
+	"version": 1
+}

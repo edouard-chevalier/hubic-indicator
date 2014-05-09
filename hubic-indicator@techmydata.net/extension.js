@@ -38,62 +38,62 @@ function _log(message){
  * and some more info on how to use gjs DBus bindings :
  * https://mail.gnome.org/archives/gnome-shell-list/2013-February/msg00059.html
  */
-const AccountIface = <interface name="com.hubic.account">
-<method name="Logout" />
-<method name="SynchronizeNow" />
-<method name="SetPauseState">
-  <arg name="paused" direction="in" type="b" />
-</method>
-<method name="Publish">
-  <arg name="absolutePath" direction="in" type="s" />
-</method>
-<method name="Unpublish">
-  <arg name="absolutePath" direction="in" type="s" />
-</method>
-<method name="GetPublishUrl">
-  <arg name="absolutePath" direction="in" type="s" />
-  <arg name="publicUrl" direction="out" type="s" />
-</method>
-<method name="GetItemStatus">
-  <arg name="absolutePath" direction="in" type="s" />
-  <arg name="status" direction="out" type="(sbb)" />
-</method>
-<signal name="ItemChanged">
-  <arg name="absolutePath" direction="out" type="s" />
-</signal>
-<property name="QueueStatus" type="(iiixx)" access="read" />
-<property name="RunningOperations" type="a(xsssxx)" access="read" />
-<property name="PublishedFiles" type="a(ssx)" access="read" />
-<property name="Account" type="s" access="read" />
-<property name="SynchronizedDir" type="s" access="readwrite" />
-<property name="ExcludedFolders" type="as" access="readwrite" />
-<property name="TotalBytes" type="x" access="read" />
-<property name="UsedBytes" type="x" access="read" />
-</interface>;
+const AccountIface = '<node>\
+    <interface name="com.hubic.account">\
+<method name="Logout" />\
+<method name="SynchronizeNow" /><method name="SetPauseState">\
+  <arg name="paused" direction="in" type="b" />\
+</method>\
+<method name="Publish">\
+  <arg name="absolutePath" direction="in" type="s" />\
+</method>\
+<method name="Unpublish">\
+  <arg name="absolutePath" direction="in" type="s" />\
+</method>\
+<method name="GetPublishUrl">\
+  <arg name="absolutePath" direction="in" type="s" />\
+  <arg name="publicUrl" direction="out" type="s" />\
+</method>\
+<method name="GetItemStatus">\
+  <arg name="absolutePath" direction="in" type="s" />\
+  <arg name="status" direction="out" type="(sbb)" />\
+</method>\
+<signal name="ItemChanged">\
+  <arg name="absolutePath" direction="out" type="s" />\
+</signal>\
+<property name="QueueStatus" type="(iiixx)" access="read" />\
+<property name="RunningOperations" type="a(xsssxx)" access="read" />\
+<property name="PublishedFiles" type="a(ssx)" access="read" />\
+<property name="Account" type="s" access="read" />\
+<property name="SynchronizedDir" type="s" access="readwrite" />\
+<property name="ExcludedFolders" type="as" access="readwrite" />\
+<property name="TotalBytes" type="x" access="read" />\
+<property name="UsedBytes" type="x" access="read" />\
+</interface></node>';
 const AccountProxy = Gio.DBusProxy.makeProxyWrapper(AccountIface);
 
-const GeneralIface =<interface name="com.hubic.general">
-<method name="Login">
-<arg name="email" direction="in" type="s" />
-<arg name="password" direction="in" type="s" />
-<arg name="synchronizedDir" direction="in" type="s" />
-</method>
-<method name="Reconnect" />
-<method name="Stop" />
-<signal name="Messages">
-<arg name="level" direction="out" type="i" />
-<arg name="message" direction="out" type="s" />
-<arg name="targetPath" direction="out" type="s" />
-</signal>
-<signal name="StateChanged">
-<arg name="oldState" direction="out" type="s" />
-<arg name="newState" direction="out" type="s" />
-</signal>
-<property name="CurrentState" type="s" access="read" />
-<property name="CurrentUploadSpeed" type="x" access="read" />
-<property name="CurrentDownloadSpeed" type="x" access="read" />
-<property name="LastMessages" type="a(xiss)" access="read" />
-</interface>;
+const GeneralIface ='<node>\<interface name="com.hubic.general">\
+<method name="Login">\
+<arg name="email" direction="in" type="s" />\
+<arg name="password" direction="in" type="s" />\
+<arg name="synchronizedDir" direction="in" type="s" />\
+</method>\
+<method name="Reconnect" />\
+<method name="Stop" />\
+<signal name="Messages">\
+<arg name="level" direction="out" type="i" />\
+<arg name="message" direction="out" type="s" />\
+<arg name="targetPath" direction="out" type="s" />\
+</signal>\
+<signal name="StateChanged">\
+<arg name="oldState" direction="out" type="s" />\
+<arg name="newState" direction="out" type="s" />\
+</signal>\
+<property name="CurrentState" type="s" access="read" />\
+<property name="CurrentUploadSpeed" type="x" access="read" />\
+<property name="CurrentDownloadSpeed" type="x" access="read" />\
+<property name="LastMessages" type="a(xiss)" access="read" />\
+</interface></node>';
 const GeneralProxy = Gio.DBusProxy.makeProxyWrapper(GeneralIface);
 
 let hubicindicator, text, button, account, general;
