@@ -1,7 +1,7 @@
 {
 	"shell-version": 
 	[
-		"3.9"
+		"3.9","3.10"
 	],
 
 	"uuid": "hubic-indicator@techmydata.net",
