@@ -27,7 +27,7 @@ const Gio = imports.gi.Gio;
 //util
 function _log(message){
     //TODO: activate log with a debug flag.
-    //log(message);
+    log(message);
 }
 /**
  * Hubic uses DBus for communication.
@@ -103,10 +103,11 @@ let hubicindicator, text, button, account, general;
 const HubicBoard = new Lang.Class({
     Name : "HubicBoard",
 
-    Extends: PanelMenu.SystemStatusButton,
+    Extends: PanelMenu.Button,
 
     _init : function(){
-        this.parent();
+        this.parent(0.0, "hubicindicator");
+      
         this._initUI();
         this._general = null;
         this._account = null;
@@ -121,8 +122,37 @@ const HubicBoard = new Lang.Class({
             return true;
         }));
     },
+    get icons() {
+        return this._box.get_children();
+    },
+
+    addIcon: function(gicon) {
+        let icon = new St.Icon({ gicon: gicon,
+                                 style_class: 'system-status-icon' });
+        this._box.add_actor(icon);
+
+        this.emit('icons-changed');
+
+        return icon;
+    },
+
+    setIcon: function(iconName) {
+        if (!this.mainIcon)
+            this.mainIcon = this.addIcon(null);
+        this.mainIcon.icon_name = iconName;
+    },
+
+    setGIcon: function(gicon) {
+        if (this.mainIcon)
+            this.mainIcon.gicon = gicon;
+        else
+            this.mainIcon = this.addIcon(gicon);
+    },
     
     _initUI: function(){
+        this._box = new St.BoxLayout({ style_class: 'panel-status-button' });
+        this.actor.add_actor(this._box);
+        
         this.UI ={};
         _log("initialiazing UI hubic board...");
 
