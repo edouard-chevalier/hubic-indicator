@@ -96,7 +96,7 @@ const GeneralIface ='<node>\<interface name="com.hubic.general">\
 </interface></node>';
 const GeneralProxy = Gio.DBusProxy.makeProxyWrapper(GeneralIface);
 
-let hubicindicator, text, button, account, general;
+let hubicindicator;
 
 
 // Hubic Board class //
@@ -122,31 +122,16 @@ const HubicBoard = new Lang.Class({
             return true;
         }));
     },
-    get icons() {
-        return this._box.get_children();
-    },
-
-    addIcon: function(gicon) {
-        let icon = new St.Icon({ gicon: gicon,
-                                 style_class: 'system-status-icon' });
-        this._box.add_actor(icon);
-
-        this.emit('icons-changed');
-
-        return icon;
-    },
-
-    setIcon: function(iconName) {
-        if (!this.mainIcon)
-            this.mainIcon = this.addIcon(null);
-        this.mainIcon.icon_name = iconName;
-    },
-
+ 
     setGIcon: function(gicon) {
         if (this.mainIcon)
             this.mainIcon.gicon = gicon;
-        else
-            this.mainIcon = this.addIcon(gicon);
+        else{
+            this.mainIcon = new St.Icon({ gicon: gicon, style_class: 'system-status-icon' });
+            this._box.add_actor(icon);
+
+            this.emit('icons-changed');//usefull ?
+        }
     },
     
     _initUI: function(){
@@ -242,7 +227,8 @@ const HubicBoard = new Lang.Class({
     rebuildLastMessages: function(){
         this.UI.lastMessages.menu.removeAll();
         // TODO: trim longmessages ?
-        for(let messIndex in this.general.LastMessages){
+        let messIndex;
+        for(messIndex in this.general.LastMessages){
             let aMess = this.general.LastMessages[messIndex];
             // hubic provides timestamp in seconds and not milliseconds
             let someTime = (new Date(aMess[0] * 1000).toLocaleTimeString());
@@ -272,7 +258,7 @@ const HubicBoard = new Lang.Class({
         // log("General state " + this.general);
         if(!force && (this._general !== null) /* && (this._general.CurrentState !== null)   */){
             // log("Refreshing general data is useless.");
-		return;
+            return;
         }
         _log("Refreshing general data...");
         this._destroyGeneral();
