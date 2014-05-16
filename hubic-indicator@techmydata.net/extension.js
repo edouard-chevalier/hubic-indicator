@@ -27,7 +27,7 @@ const Gio = imports.gi.Gio;
 //util
 function _log(message){
     //TODO: activate log with a debug flag.
-    log(message);
+//    log(message);
 }
 /**
  * Hubic uses DBus for communication.
@@ -298,17 +298,17 @@ const HubicBoard = new Lang.Class({
         _log("Refreshing account data...");
         this._destroyAccount();
         this._account = new AccountProxy(Gio.DBus.session, 'com.hubiC','/com/hubic/Account');
-        this.itemChangedSignalId = this._account.connectSignal('ItemChanged',Lang.bind(this,function(proxy,sender,res){
-            _log("Item state changed by " + sender + " with path "+ res[0] );
-            _log("original connection :" + this.itemChangedSignalId);
-            // this.currentState = res[1];
-            // this.refreshGeneral(true);
-            let status = this._account.GetItemStatusSync(res[0]);
-            if(status){
-                _log("status" + status);
-            }
-            //this.refresh();
-        }));
+//        this.itemChangedSignalId = this._account.connectSignal('ItemChanged',Lang.bind(this,function(proxy,sender,res){
+//            _log("Item state changed by " + sender + " with path "+ res[0] );
+//            _log("original connection :" + this.itemChangedSignalId);
+//            // this.currentState = res[1];
+//            // this.refreshGeneral(true);
+//            let status = this._account.GetItemStatusSync(res[0]);
+//            if(status){
+//                _log("status" + status);
+//            }
+//            //this.refresh();
+//        }));
     },
     _destroyAccount: function(){
         if(this._account !== null){
