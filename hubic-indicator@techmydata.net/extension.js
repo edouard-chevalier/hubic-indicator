@@ -128,7 +128,7 @@ const HubicBoard = new Lang.Class({
             this.mainIcon.gicon = gicon;
         else{
             this.mainIcon = new St.Icon({ gicon: gicon, style_class: 'system-status-icon' });
-            this._box.add_actor(icon);
+            this._box.add_actor(this.mainIcon);
 
             this.emit('icons-changed');//usefull ?
         }
