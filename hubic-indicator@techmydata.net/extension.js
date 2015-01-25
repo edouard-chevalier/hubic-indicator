@@ -27,7 +27,7 @@ const Gio = imports.gi.Gio;
 //util
 function _log(message){
     //TODO: activate log with a debug flag.
-    log(message);
+    //log(message);
 }
 
 let hubicindicator = null;
@@ -108,6 +108,7 @@ const HubicBoard = new Lang.Class({
     },
 
     refreshAccountUI: function(){
+        _log("Refreshing Account UI board ...");
         this.account.menu.removeAll();
         let state = this.hubicindicator.currentState;
         this.setGIcon(this.statusicons[state]);
@@ -120,7 +121,9 @@ const HubicBoard = new Lang.Class({
             this.account.menu.addMenuItem(menuItem);
             if((state == "NotConnected") || (state == "Unknown")){
                 let item = new PopupMenu.PopupMenuItem("Reconnect...");
-                item.connect('activate', Lang.bind(this, this.hubicindicator.reconnect));
+                item.connect('activate', Lang.bind(this,function(){
+                    this.hubicindicator.reconnect();
+                }));
                 this.account.menu.addMenuItem(item);
             }
             return;
@@ -131,18 +134,23 @@ const HubicBoard = new Lang.Class({
         this.account.menu.addMenuItem(menuItem);
         if(state == "Paused"){
             let item = new PopupMenu.PopupMenuItem("Resume syncing...");
-            item.connect('activate', Lang.bind(this, this.hubicindicator.resume));
+            item.connect('activate', Lang.bind(this,function(){
+                this.hubicindicator.resume();
+            }));
             this.account.menu.addMenuItem(item);
         }
         if((state == "Idle") || (state == "Busy")){
             let item = new PopupMenu.PopupMenuItem("Pause syncing...");
-            item.connect('activate', Lang.bind(this, this.hubicindicator.pause));
+            item.connect('activate', Lang.bind(this,function(){
+                this.hubicindicator.pause();
+            }));
             this.account.menu.addMenuItem(item);
         }
+        _log("Refreshing Account UI board done.");
     },
     refresh: function(){
         _log("Refreshing hubic board ...");
-        this.general.state.text = this.currentState;
+        this.general.state.text = this.hubicindicator.currentState;
 
         this.refreshAccountUI();
         this.rebuildLastMessages();
@@ -207,6 +215,7 @@ function init() {
 function enable() {
     _log("Enabling hubic board...");
     
+    hubicindicator.start();
     hubicBoard = new HubicBoard(hubicindicator);
     Main.panel.addToStatusArea('hubicboard', hubicBoard);
 };
@@ -214,6 +223,7 @@ function enable() {
 function disable() {   
     if (hubicBoard !== null){
     	hubicBoard.destroy();
-    }  
+    }
     hubicBoard = null;
+    hubicindicator.stop();
 };

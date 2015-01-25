@@ -21,11 +21,6 @@ const Me = imports.misc.extensionUtils.getCurrentExtension();
 
 const Gio = imports.gi.Gio;
 
-//util
-function _log(message){
-    //TODO: activate log with a debug flag.
-//    log(message);
-}
 /**
  * Hubic uses DBus for communication.
  * Dbus publishes its interface. How to describe it ? with XML.
@@ -92,12 +87,15 @@ const GeneralIface ='<node>\<interface name="com.hubic.general">\
 <property name="LastMessages" type="a(xiss)" access="read" />\
 </interface></node>';
 const GeneralProxy = Gio.DBusProxy.makeProxyWrapper(GeneralIface);
-
-
-
-
-
-// Hubic Indicator class //
+//util
+function _log(message){
+    //TODO: activate log with a debug flag.
+    //log(message);
+}
+/**
+ *  Hubic Indicator class  in charge of managing interaction with daemon.
+ *  It seems that some properties of DBus object are not updated correctly. so proxies are competely rebuilt at each event.
+ */
 const HubicIndicator= new Lang.Class({
     Name : "HubicIndicator",
 
@@ -105,20 +103,11 @@ const HubicIndicator= new Lang.Class({
         this._general = null;
         this._account = null;
         this._listener = null;
-        this.refresh();
-
-        // register timer that refresh properties of general and account
-        // properties.
-        // once problems with refresh of these properties are solved, can be removed.
-        this.timer = Mainloop.timeout_add_seconds(60, Lang.bind(this, function() {
-            this.refresh();
-            return true;
-        }));
     },
      
    
     refresh: function(){
-        _log("Refreshing hubic board data ...");
+        _log("Refreshing hubic indicator data ...");
         _log("Refreshing general");
         this.refreshGeneral(true);
         _log("Refreshing account");
@@ -141,16 +130,12 @@ const HubicIndicator= new Lang.Class({
     },
     
     _sendListenerStateChanged: function(){
-        listener();
-    }
-    ,
+        this._listener();
+    },
     
     registerListener: function(callback){
         this._listener =  callback;
-    }
-    
-    ,
-    
+    },
 
     refreshGeneral: function(force){
         // log("General state " + this.general);
@@ -176,6 +161,13 @@ const HubicIndicator= new Lang.Class({
             this.refresh();
             this._sendListenerStateChanged();
         }));
+        
+        if(this.currentState === 'NotConnected'){
+            this._reconnectDaemon();
+        }
+        else{
+            this._disposeReconnectDaemon();
+        }
 		
     },
     _destroyGeneral: function(){
@@ -218,19 +210,11 @@ const HubicIndicator= new Lang.Class({
         }
         this._account = null;
     },
-    
-    lastMessages: function(){
-        res = new Array();
-        // TODO: trim longmessages ?
-        let messIndex;
-        for(messIndex in this.general.LastMessages){
-            res.push(this.general.LastMessages[messIndex]);
-        }
-        
-    },
+
     pause: function(){
         let acc = this.account;
         if(acc){// TODO: do it asynchronous to handle errors.
+            _log(acc);
             acc.SetPauseStateSync(true);
         }
     },
@@ -250,12 +234,38 @@ const HubicIndicator= new Lang.Class({
             }));
         }
     },
+    
+    _reconnectDaemon : function(){
+        if(!this.timer){
+            _log("lauching daemon");
+            this.timer = Mainloop.timeout_add_seconds(20, Lang.bind(this, function() {
+                _log("try to reconnect...");
+                this.reconnect();
+                return true;
+            })); 
+        }
+        else{
+            _log(" daemon already running.");
+        }
+    },
+    _disposeReconnectDaemon: function(){
+        _log("disposing daemon");
+      //remove timers
+        if(this.timer) {
+            Mainloop.source_remove(this.timer);
+            this.timer = null;
+        }
+    },
+    start: function(){
+        // register timer that refresh properties of general and account
+        // properties.
+        // once problems with refresh of these properties are solved, can be removed.
+      
+        this.refresh();
+    },
     stop: function(){
         _log("Stopping hubic board ...");
-        //remove timers
-        if(this.timer) {
-            Mainloop.source_remove(this.timer);	
-        }
+        this._disposeReconnectDaemon();
         this._destroyAccount();
         this._destroyGeneral();
     }
