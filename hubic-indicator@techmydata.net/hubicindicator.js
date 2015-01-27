@@ -90,7 +90,7 @@ const GeneralProxy = Gio.DBusProxy.makeProxyWrapper(GeneralIface);
 //util
 function _log(message){
     //TODO: activate log with a debug flag.
-    //log(message);
+    log(message);
 }
 /**
  *  Hubic Indicator class  in charge of managing interaction with daemon.
@@ -108,9 +108,8 @@ const HubicIndicator= new Lang.Class({
    
     refresh: function(){
         _log("Refreshing hubic indicator data ...");
-        _log("Refreshing general");
+
         this.refreshGeneral(true);
-        _log("Refreshing account");
         this.refreshAccount(true);
     },
    

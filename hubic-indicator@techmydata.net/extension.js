@@ -82,26 +82,31 @@ const HubicBoard = new Lang.Class({
         this.statusicons['Paused'] = Gio.icon_new_for_string(Me.path + "/icons/scalable/sync-client-paused.svg");
 		
         // first item in menu display status.
-        this.general= {};
-        this.general.statebin = new St.Bin();
-        let stateUIitem = new St.BoxLayout();
-        stateUIitem.add_actor(new St.Label({text: 'Hubic state: '}));
-        this.general.state = new St.Label({text: 'Unknown'});//building direct access to state
-        stateUIitem.add_actor(this.general.state);
-        this.general.statebin.add_actor(stateUIitem);
-        
-        this.menu.box.add(this.general.statebin);
+        this.status = {};
+//        let statebin = new St.Bin();
+//        let stateUIitem = new St.BoxLayout();
+//        stateUIitem.add_actor(new St.Label({text: 'Hubic state: '}));
+//        this.status.state = new St.Label({text: 'Unknown'});//building direct access to state
+//        stateUIitem.add_actor(this.status.state);
+//        statebin.add_actor(stateUIitem);
+//        
+//        this.menu.box.add(statebin);
 
+        this.status.state = new PopupMenu.PopupMenuItem("Hubic state: Unknown");//building direct access to state
+        this.status.state.setSensitive(false);
+        this.menu.addMenuItem(this.status.state);
+        
+        // Account menu
+        this.status.menu = new PopupMenu.PopupMenuSection("statusaction");
+        this.menu.addMenuItem( this.status.menu);
+        
         // next is a separator.
         this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
 
-        // Account menu
-        this.account= {};
-        this.account.menu = new PopupMenu.PopupMenuSection("accountmenu");
-        this.menu.addMenuItem(this.account.menu);
-
+        this.accountinfo = new PopupMenu.PopupMenuItem("No account info available.");
+        this.accountinfo.setSensitive(false);
+        this.menu.addMenuItem(this.accountinfo);
         // general messages.
-        this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
         this.lastMessages = new PopupMenu.PopupSubMenuMenuItem("Last Messages");
         this.menu.addMenuItem(this.lastMessages);
         _log("initialiazing UI hubic board done.");
@@ -109,48 +114,50 @@ const HubicBoard = new Lang.Class({
 
     refreshAccountUI: function(){
         _log("Refreshing Account UI board ...");
-        this.account.menu.removeAll();
+        this.status.menu.removeAll();
         let state = this.hubicindicator.currentState;
         this.setGIcon(this.statusicons[state]);
         
         // case not connected, nothing to display but propose to reconnect.
         if((state == 'NotConnected') || (state == 'Connecting') || (state == 'Unknown')){
             _log("Not showing account stuffs");
-            let menuItem = new PopupMenu.PopupMenuItem("No account info available.");
-            menuItem.setSensitive(false);
-            this.account.menu.addMenuItem(menuItem);
+//            let menuItem = new PopupMenu.PopupMenuItem("No account info available.");
+//            menuItem.setSensitive(false);
+//            this.status.menu.addMenuItem(menuItem);
+            this.accountinfo.label.text = "No account info available.";
             if((state == "NotConnected") || (state == "Unknown")){
                 let item = new PopupMenu.PopupMenuItem("Reconnect...");
                 item.connect('activate', Lang.bind(this,function(){
                     this.hubicindicator.reconnect();
                 }));
-                this.account.menu.addMenuItem(item);
+                this.status.menu.addMenuItem(item);
             }
             return;
         }
         let text = bytesToSize(this.hubicindicator.account.UsedBytes,2) + " used over "+ bytesToSize(this.hubicindicator.account.TotalBytes,0)+".";
-        let menuItem = new PopupMenu.PopupMenuItem(text);
-        menuItem.setSensitive(false);
-        this.account.menu.addMenuItem(menuItem);
+//        let menuItem = new PopupMenu.PopupMenuItem(text);
+//        menuItem.setSensitive(false);
+//        this.status.menu.addMenuItem(menuItem);
+        this.accountinfo.label.text = text;
         if(state == "Paused"){
             let item = new PopupMenu.PopupMenuItem("Resume syncing...");
             item.connect('activate', Lang.bind(this,function(){
                 this.hubicindicator.resume();
             }));
-            this.account.menu.addMenuItem(item);
+            this.status.menu.addMenuItem(item);
         }
         if((state == "Idle") || (state == "Busy")){
             let item = new PopupMenu.PopupMenuItem("Pause syncing...");
             item.connect('activate', Lang.bind(this,function(){
                 this.hubicindicator.pause();
             }));
-            this.account.menu.addMenuItem(item);
+            this.status.menu.addMenuItem(item);
         }
         _log("Refreshing Account UI board done.");
     },
     refresh: function(){
         _log("Refreshing hubic board ...");
-        this.general.state.text = this.hubicindicator.currentState;
+        this.status.state.label.text = 'Hubic state: ' + this.hubicindicator.currentState;
 
         this.refreshAccountUI();
         this.rebuildLastMessages();
