@@ -83,15 +83,6 @@ const HubicBoard = new Lang.Class({
 		
         // first item in menu display status.
         this.status = {};
-//        let statebin = new St.Bin();
-//        let stateUIitem = new St.BoxLayout();
-//        stateUIitem.add_actor(new St.Label({text: 'Hubic state: '}));
-//        this.status.state = new St.Label({text: 'Unknown'});//building direct access to state
-//        stateUIitem.add_actor(this.status.state);
-//        statebin.add_actor(stateUIitem);
-//        
-//        this.menu.box.add(statebin);
-
         this.status.state = new PopupMenu.PopupMenuItem("Hubic state: Unknown");//building direct access to state
         this.status.state.setSensitive(false);
         this.menu.addMenuItem(this.status.state);

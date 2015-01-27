@@ -90,7 +90,7 @@ const GeneralProxy = Gio.DBusProxy.makeProxyWrapper(GeneralIface);
 //util
 function _log(message){
     //TODO: activate log with a debug flag.
-    log(message);
+    //log(message);
 }
 /**
  *  Hubic Indicator class  in charge of managing interaction with daemon.
@@ -148,10 +148,7 @@ const HubicIndicator= new Lang.Class({
         this.stateChangedSignalId = this._general.connectSignal('StateChanged',Lang.bind(this,function(proxy,sender,res){
             _log("Signal state changed by " + sender + " with state old "+ res[0] + " new state " + res[1]);
             _log("original connection :" + this.stateChangedSignalId);
-            // disconnect from signal 'StateChanged' no, but should
-            // be in _destroyGeneral().
-            // this.sender = sender;
-            // this._general.disconnectSignal(this.stateChangedSignalId);
+
             if(this.currentState !== res[0]){
                 _log("Warning : expected previous state was " + this.currentState);
             }

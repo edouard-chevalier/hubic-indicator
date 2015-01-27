@@ -7,6 +7,6 @@
 	"uuid": "hubic-indicator@techmydata.net",
 	"name": "Hubic Indicator",
 	"url": "https://github.com/DoudTechData/hubic-indicator",
-	"description": "Main informations and controls on your hubic synchronization daemon. Hubic (http://hubic.com) is a personal storage platform online (like dropbox, Box, Google Drive).",
-	"version": 1
+	"description": "Main informations and controls on your hubic synchronization daemon. Hubic (http://hubic.com) is a personal storage platform online (like dropbox, Box, Google Drive). Hubic synchronization daemon should be installed and configured correctly (more info here : https://forums.hubic.com/showthread.php?272-hubiC-for-Linux-beta-3-is-out-! )",
+	"version": 3
 }
