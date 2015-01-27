@@ -81,23 +81,24 @@ const HubicBoard = new Lang.Class({
         this.statusicons['Busy'] = icon_updating;
         this.statusicons['Paused'] = Gio.icon_new_for_string(Me.path + "/icons/scalable/sync-client-paused.svg");
 		
-        // first item in menu display status.
+        // first item in menu display status available action according to current state.
         this.status = {};
         this.status.state = new PopupMenu.PopupMenuItem("Hubic state: Unknown");//building direct access to state
         this.status.state.setSensitive(false);
         this.menu.addMenuItem(this.status.state);
         
-        // Account menu
+        // action according to status container
         this.status.menu = new PopupMenu.PopupMenuSection("statusaction");
         this.menu.addMenuItem( this.status.menu);
         
         // next is a separator.
         this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
 
+        //genral info and messages.
         this.accountinfo = new PopupMenu.PopupMenuItem("No account info available.");
         this.accountinfo.setSensitive(false);
         this.menu.addMenuItem(this.accountinfo);
-        // general messages.
+        // last messages.
         this.lastMessages = new PopupMenu.PopupSubMenuMenuItem("Last Messages");
         this.menu.addMenuItem(this.lastMessages);
         _log("initialiazing UI hubic board done.");
