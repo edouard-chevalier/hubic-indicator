@@ -154,11 +154,12 @@ const HubicIndicator= new Lang.Class({
             }
             this.currentState = res[1];
             //this.refreshGeneral(true);
+            //I know that it is surprising but I noticed that properties (like current state) are not updated. So we have to "reboot" proxy on state change event.
             this.refresh();
             this._sendListenerStateChanged();
         }));
         
-        if(this.currentState === 'NotConnected'){
+        if((this.currentState === 'NotConnected') || (this.currentState === 'Connecting')){
             this._reconnectDaemon();
         }
         else{
